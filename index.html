@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FO4 Achievement Checklist</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; background: #111; color: #eee; }
+    h2 { border-bottom: 1px solid #444; margin-top: 2rem; }
+    label { display: flex; align-items: center; margin: 0.5rem 0; }
+    input[type="checkbox"] { margin-right: 0.5rem; }
+    textarea { width: 100%; height: 60px; margin-top: 4px; background: #222; color: #eee; border: 1px solid #333; }
+    .achievement { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dotted #444; }
+  </style>
+</head>
+<body>
+  <h1>Fallout 4 Achievement Checklist</h1>
+  <p id="status">Loading...</p>
+  <div id="checklist"></div>
+
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyA5tEvB0eoWAJjZsj03tJvEKuffy_uiIDM",
+  authDomain: "fo4-checklist.firebaseapp.com",
+  projectId: "fo4-checklist",
+  storageBucket: "fo4-checklist.appspot.com",
+  messagingSenderId: "8298158004",
+  appId: "1:8298158004:web:f8fe5e16b4fc93f9397921"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let userId = null;
+    const checklistContainer = document.getElementById("checklist");
+    const statusEl = document.getElementById("status");
+
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(res => {
+        userId = res.user.uid;
+        statusEl.innerText = "Signed in as " + res.user.email;
+        loadChecklist();
+      })
+      .catch(err => {
+        statusEl.innerText = "Auth error: " + err.message;
+      });
+
+    const checklistData = {};
+
+    async function loadChecklist() {
+      const snapshot = await db.collection("checklists").doc(userId).get();
+      if (snapshot.exists) {
+        Object.assign(checklistData, snapshot.data());
+      }
+      renderChecklist();
+    }
+
+    function renderChecklist() {
+      const data = {};
+      data['Base Game'] = [];
+      data['Automatron'] = [];
+      data['Far Harbor'] = [];
+      data['Nuka-World'] = [];
+      data['Vault-Tec Workshop'] = [];
+      data['Contraptions Workshop'] = [];
+      data['Wasteland Workshop'] = [];
+      data['Base Game'].push({id: '0', name: `Complete "Reunions"`, desc: `Complete "Reunions"`});
+      data['Base Game'].push({id: '1', name: `Dangerous Minds`, desc: `Complete "Dangerous Minds"`});
+      data['Base Game'].push({id: '2', name: `Complete "Hunter/Hunted"`, desc: `Complete "Hunter/Hunted"`});
+      data['Base Game'].push({id: '3', name: `The Molecular Level`, desc: `Complete "The Molecular Level"`});
+      data['Base Game'].push({id: '4', name: `Complete "The Nuclear Option"`, desc: `Complete "The Nuclear Option"`});
+      data['Base Game'].push({id: '5', name: `Institutionalized`, desc: `Complete "Institutionalized"`});
+      data['Base Game'].push({id: '6', name: `Complete "Mankind-Redefined"`, desc: `Complete "Mankind-Redefined"`});
+      data['Base Game'].push({id: '7', name: `Powering Up`, desc: `Complete "Powering Up"`});
+      data['Base Game'].push({id: '8', name: `Complete "Nuclear Family"`, desc: `Complete "Nuclear Family"`});
+      data['Base Game'].push({id: '9', name: `Old Guns`, desc: `Complete "Old Guns"`});
+      data['Base Game'].push({id: '10', name: `Complete "Blind Betrayal"`, desc: `Complete "Blind Betrayal"`});
+      data['Base Game'].push({id: '11', name: `Ad Victoriam`, desc: `Complete "Ad Victoriam"`});
+      data['Base Game'].push({id: '12', name: `Complete "Underground Undercover"`, desc: `Complete "Underground Undercover"`});
+      data['Base Game'].push({id: '13', name: `Rockets' Red Glare`, desc: `Complete "Rockets' Red Glare"`});
+      data['Base Game'].push({id: '14', name: `Reach Maximum Happiness in a Large Settlement`, desc: `Complete "Reach Maximum Happiness in a Large Settlement"`});
+      data['Base Game'].push({id: '15', name: `Mercenary`, desc: `Complete "Mercenary"`});
+      data['Base Game'].push({id: '16', name: `Hack 50 Terminals`, desc: `Complete "Hack 50 Terminals"`});
+      data['Base Game'].push({id: '17', name: `Lovable`, desc: `Complete "Lovable"`});
+      data['Base Game'].push({id: '18', name: `Placed A Grenade Or Mine While Pickpocketing`, desc: `Complete "Placed A Grenade Or Mine While Pickpocketing"`});
+      data['Base Game'].push({id: '19', name: `They're Not Dolls…`, desc: `Complete "They're Not Dolls…"`});
+      data['Vault-Tec Workshop'].push({id: '20', name: `Collect 20 Vault-Tec Bobbleheads`, desc: `Complete "Collect 20 Vault-Tec Bobbleheads"`});
+      data['Base Game'].push({id: '21', name: `Prepared for the Future`, desc: `Complete "Prepared for the Future"`});
+      data['Base Game'].push({id: '22', name: `Have 5 Tamed Creatures in a Settlement`, desc: `Complete "Have 5 Tamed Creatures in a Settlement"`});
+      data['Base Game'].push({id: '23', name: `Instigator`, desc: `Complete "Instigator"`});
+      data['Base Game'].push({id: '24', name: `Build One of Every Cage Type`, desc: `Complete "Build One of Every Cage Type"`});
+      data['Base Game'].push({id: '25', name: `The Islander's Almanac`, desc: `Complete "The Islander's Almanac"`});
+      data['Far Harbor'].push({id: '26', name: `Defeat 30 Far Harbor Sea Creatures`, desc: `Complete "Defeat 30 Far Harbor Sea Creatures"`});
+      data['Base Game'].push({id: '27', name: `Show Off`, desc: `Complete "Show Off"`});
+      data['Base Game'].push({id: '28', name: `Assign a settler to a pillory`, desc: `Complete "Assign a settler to a pillory"`});
+      data['Base Game'].push({id: '29', name: `Mass Production`, desc: `Complete "Mass Production"`});
+      data['Base Game'].push({id: '30', name: `Become Overseer`, desc: `Complete "Become Overseer"`});
+      data['Base Game'].push({id: '31', name: `Better Living Underground`, desc: `Complete "Better Living Underground"`});
+      data['Base Game'].push({id: '32', name: `Equip Vault 88 suit and Pip-Boy on a settler`, desc: `Complete "Equip Vault 88 suit and Pip-Boy on a settler"`});
+      data['Base Game'].push({id: '33', name: `Raiding for a Living`, desc: `Complete "Raiding for a Living"`});
+      data['Base Game'].push({id: '34', name: `Collect every issue of Scav! Magazine`, desc: `Complete "Collect every issue of Scav! Magazine"`});
+      data['Base Game'].push({id: '35', name: `Beverageer`, desc: `Complete "Beverageer"`});
+      data['Base Game'].push({id: '36', name: `Establish 8 Raider Camps in the Commonwealth`, desc: `Complete "Establish 8 Raider Camps in the Commonwealth"`});
+      data['Base Game'].push({id: '37', name: `All Sugared Up`, desc: `Complete "All Sugared Up"`});
+      data['Base Game'].push({id: '38', name: `Redeem 00,000 tickets at the Nuka-Cade`, desc: `Complete "Redeem 00,000 tickets at the Nuka-Cade"`});
+      data['Base Game'].push({id: '39', name: `Taken for a Ride`, desc: `Complete "Taken for a Ride"`});
+      data['Base Game'].push({id: '40', name: `Complete "The Grand Tour"`, desc: `Complete "The Grand Tour"`});
+      data['Base Game'].push({id: '41', name: `Home Sweet Home`, desc: `Complete "Home Sweet Home"`});
+
+      for (const [dlc, items] of Object.entries(data)) {
+        const section = document.createElement('section');
+        section.innerHTML = `<h2>${dlc}</h2>`;
+        items.forEach(item => {
+          const box = document.createElement('div');
+          box.className = 'achievement';
+          box.innerHTML = `
+            <label><input type="checkbox" id="cb-${item.id}"> ${item.name}</label>
+            <div><i>${item.desc}</i></div>
+            <textarea id="note-${item.id}" placeholder="Your notes..."></textarea>
+          `;
+          section.appendChild(box);
+        });
+        checklistContainer.appendChild(section);
+      }
+
+      for (const id in checklistData) {
+        const item = checklistData[id];
+        const cb = document.getElementById("cb-" + id);
+        const note = document.getElementById("note-" + id);
+        if (cb) cb.checked = item.checked;
+        if (note) note.value = item.note || "";
+      }
+
+      document.querySelectorAll('input[type=checkbox], textarea').forEach(el => {
+        el.addEventListener('change', saveProgress);
+      });
+    }
+
+    function saveProgress() {
+      const newData = {};
+      document.querySelectorAll('.achievement').forEach(el => {
+        const id = el.querySelector('input').id.replace('cb-', '');
+        const checked = el.querySelector('input').checked;
+        const note = el.querySelector('textarea').value;
+        newData[id] = {checked, note};
+      });
+      db.collection("checklists").doc(userId).set(newData).then(() => {
+        statusEl.innerText = "Progress saved.";
+      });
+    }
+  </script>
+</body>
+</html>
