@@ -29,40 +29,23 @@
   <div id="checklist"></div>
 
   <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyA5tEVBQeoWAJjZsjO3TJvEKuffy_uilDM",
-    authDomain: "fo4-checklist.firebaseapp.com",
-    projectId: "fo4-checklist",
-    storageBucket: "fo4-checklist.firebaseapp.com",
-    messagingSenderId: "8298158004",
-    appId: "1:8298158004:web:f8fe5e16b4fc93f9397921"
-
-};
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+  
     const db = firebase.firestore();
 
     let userId = null;
     const checklistContainer = document.getElementById("checklist");
     const statusEl = document.getElementById("status");
 
-   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .then(() => {
-    return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-  })
-  .then(res => {
-    userId = res.user.uid;
-    statusEl.innerText = "Signed in as " + res.user.email;
-    loadChecklist();
-  })
-  .catch(err => {
-    statusEl.innerText = "Auth error: " + err.message;
-  });
-
-
+  
     const checklistData = {};
 
+    // Called by auth.js once signed in
+    function onUserSignedIn(user) {
+      userId = user.uid;
+      statusEl.innerText = "Signed in as " + user.email;
+      loadChecklist();
+    }
+    
     async function loadChecklist() {
       const snapshot = await db.collection("checklists").doc(userId).get();
       if (snapshot.exists) {
