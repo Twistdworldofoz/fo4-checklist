@@ -1,5 +1,3 @@
-// auth.js
-
 const firebaseConfig = {
   apiKey: "AIzaSyA5tEVBQeoWAJjZsjO3TJvEKuffy_uilDM",
   authDomain: "fo4-checklist.firebaseapp.com",
@@ -14,14 +12,21 @@ const auth = firebase.auth();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   .then(() => {
-    if (!auth.currentUser) {
-      return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-    }
+    return new Promise(resolve => {
+      const unsub = auth.onAuthStateChanged(user => {
+        unsub(); // stop listening
+        resolve(user);
+      });
+    });
   })
-  .then(result => {
-    const user = auth.currentUser || result.user;
-    if (user && typeof onUserSignedIn === "function") {
-      onUserSignedIn(user);
+  .then(user => {
+    if (user) {
+      if (typeof onUserSignedIn === "function") onUserSignedIn(user);
+    } else {
+      return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        .then(result => {
+          if (typeof onUserSignedIn === "function") onUserSignedIn(result.user);
+        });
     }
   })
   .catch(err => {
@@ -29,8 +34,9 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     if (statusEl) statusEl.innerText = "Auth error: " + err.message;
   });
 
+// Redirect to home if logged out
 auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "index.html";
+  if (!user && location.pathname !== "/index.html") {
+    location.href = "index.html";
   }
 });
