@@ -42,12 +42,13 @@
     const statusEl = document.getElementById("status");
     const checklistData = {};
 
-    function onUserSignedIn(user) {
-      userId = user.uid;
-      console.log("Signed in as:", user.email);
-      statusEl.innerText = "Signed in as " + user.email;
-      loadChecklist();
-    }
+  function onUserSignedIn(user) {
+  console.log("onUserSignedIn called");
+  console.log("User:", user.email);
+  userId = user.uid;
+  statusEl.innerText = "Signed in as " + user.email;
+  loadChecklist();
+}
 
     async function loadChecklist() {
       const snapshot = await db.collection("checklists").doc(userId).get();
