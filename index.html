@@ -1,19 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FO4 Achievement Checklist</title>
-    <h2>Build Guides</h2>
-<ul>
-  <li><a href="juggernaut.html">Juggernaut Survival Build</a></li>
-  <li><a href="wasteland-commando.html">Wasteland Commando Build</a></li>
-  <li><a href="power-armor.html">Power Armor Survival Build</a></li>
-</ul>
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
   <style>
     body { font-family: sans-serif; padding: 1rem; background: #111; color: #eee; }
     h2 { border-bottom: 1px solid #444; margin-top: 2rem; }
@@ -21,32 +17,38 @@
     input[type="checkbox"] { margin-right: 0.5rem; }
     textarea { width: 100%; height: 60px; margin-top: 4px; background: #222; color: #eee; border: 1px solid #333; }
     .achievement { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dotted #444; }
+    ul { margin-bottom: 2rem; }
   </style>
 </head>
 <body>
   <h1>Fallout 4 Achievement Checklist</h1>
   <p id="status">Loading...</p>
   <button id="logoutBtn" style="display: none;">Logout</button>
+
+  <h2>Build Guides</h2>
+  <ul>
+    <li><a href="juggernaut.html">Juggernaut Survival Build</a></li>
+    <li><a href="wasteland-commando.html">Wasteland Commando Build</a></li>
+    <li><a href="power-armor.html">Power Armor Survival Build</a></li>
+  </ul>
+
   <div id="checklist"></div>
 
+  <!-- Your main app logic (includes onUserSignedIn) -->
   <script>
-  
     const db = firebase.firestore();
-
     let userId = null;
     const checklistContainer = document.getElementById("checklist");
     const statusEl = document.getElementById("status");
-
-  
     const checklistData = {};
 
-    // Called by auth.js once signed in
     function onUserSignedIn(user) {
       userId = user.uid;
+      console.log("Signed in as:", user.email);
       statusEl.innerText = "Signed in as " + user.email;
       loadChecklist();
     }
-    
+
     async function loadChecklist() {
       const snapshot = await db.collection("checklists").doc(userId).get();
       if (snapshot.exists) {
@@ -106,7 +108,6 @@
       data['Base Game'].push({id: '39', name: `Taken for a Ride`, desc: `Complete "Taken for a Ride"`});
       data['Base Game'].push({id: '40', name: `Complete "The Grand Tour"`, desc: `Complete "The Grand Tour"`});
       data['Base Game'].push({id: '41', name: `Home Sweet Home`, desc: `Complete "Home Sweet Home"`});
-
       for (const [dlc, items] of Object.entries(data)) {
         const section = document.createElement('section');
         section.innerHTML = `<h2>${dlc}</h2>`;
@@ -119,6 +120,7 @@
             <textarea id="note-${item.id}" placeholder="Your notes..."></textarea>
           `;
           section.appendChild(box);
+
           const checkbox = box.querySelector('input[type="checkbox"]');
           const desc = box.querySelector('div');
           const notes = box.querySelector('textarea');
@@ -127,8 +129,7 @@
             const hidden = checkbox.checked;
             desc.style.display = hidden ? 'none' : '';
             notes.style.display = hidden ? 'none' : '';
-});
-
+          });
         });
         checklistContainer.appendChild(section);
       }
@@ -138,14 +139,14 @@
         const cb = document.getElementById("cb-" + id);
         const note = document.getElementById("note-" + id);
         if (cb) {
-        cb.checked = item.checked;
-        const desc = cb.closest('.achievement').querySelector('div');
-        const notes = cb.closest('.achievement').querySelector('textarea');
-        const hidden = item.checked;
-        if (desc) desc.style.display = hidden ? 'none' : '';
-        if (notes) notes.style.display = hidden ? 'none' : '';
-      }
-      if (note) note.value = item.note || "";
+          cb.checked = item.checked;
+          const desc = cb.closest('.achievement').querySelector('div');
+          const notes = cb.closest('.achievement').querySelector('textarea');
+          const hidden = item.checked;
+          if (desc) desc.style.display = hidden ? 'none' : '';
+          if (notes) notes.style.display = hidden ? 'none' : '';
+        }
+        if (note) note.value = item.note || "";
       }
 
       document.querySelectorAll('input[type=checkbox], textarea').forEach(el => {
@@ -166,6 +167,8 @@
       });
     }
   </script>
+
+  <!-- Firebase login and logout handling -->
   <script src="auth.js"></script>
 </body>
 </html>
