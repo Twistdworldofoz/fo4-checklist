@@ -10,33 +10,23 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .then(() => {
-    return new Promise(resolve => {
-      const unsub = auth.onAuthStateChanged(user => {
-        unsub(); // stop listening
-        resolve(user);
-      });
-    });
-  })
-  .then(user => {
-    if (user) {
-      if (typeof onUserSignedIn === "function") onUserSignedIn(user);
-    } else {
-      return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-        .then(result => {
-          if (typeof onUserSignedIn === "function") onUserSignedIn(result.user);
-        });
-    }
-  })
-  .catch(err => {
-    const statusEl = document.getElementById("status");
-    if (statusEl) statusEl.innerText = "Auth error: " + err.message;
-  });
+// Always set persistent session
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 
-// Redirect to home if logged out
+// Wait until Firebase tells us if user is signed in
 auth.onAuthStateChanged(user => {
-  if (!user && location.pathname !== "/index.html") {
-    location.href = "index.html";
+  if (user) {
+    // ✅ Already logged in
+    if (typeof onUserSignedIn === "function") onUserSignedIn(user);
+  } else {
+    // ❌ Not signed in — show popup once
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(result => {
+        if (typeof onUserSignedIn === "function") onUserSignedIn(result.user);
+      })
+      .catch(err => {
+        const statusEl = document.getElementById("status");
+        if (statusEl) statusEl.innerText = "Auth error: " + err.message;
+      });
   }
 });
