@@ -36,7 +36,7 @@
     <li><a href="wasteland-commando.html">Wasteland Commando Build</a></li>
     <li><a href="power-armor.html">Power Armor Survival Build</a></li>
   </ul>
-
+  <p id="checkCounter">0 of 0 completed</p>
   <div id="checklist"></div>
   <script src="auth.js"></script>
   <!-- Your main app logic (includes onUserSignedIn) -->
@@ -46,6 +46,14 @@
     const checklistContainer = document.getElementById("checklist");
     const statusEl = document.getElementById("status");
     const checklistData = {};
+
+    function updateCheckCounter() {
+      const checkboxes = document.querySelectorAll('input[type=checkbox]');
+      const checked = [...checkboxes].filter(cb => cb.checked).length;
+      const total = checkboxes.length;
+      document.getElementById("checkCounter").innerText = `${checked} of ${total} completed`;
+    }
+    
 
   function onUserSignedIn(user) {
   console.log("onUserSignedIn called");
@@ -189,6 +197,7 @@
             const hidden = checkbox.checked;
             desc.style.display = hidden ? 'none' : '';
             notes.style.display = hidden ? 'none' : '';
+            updateCheckCounter();
           });
         });
         checklistContainer.appendChild(section);
@@ -226,7 +235,10 @@ if (toggle) {
       }
 
       document.querySelectorAll('input[type=checkbox], textarea').forEach(el => {
-        el.addEventListener('change', saveProgress);
+        el.addEventListener('change', () => {
+          saveProgress();
+          if (el.type === "checkbox") updateCheckCounter();  // 👈 add this
+        });
       });
     }
 
