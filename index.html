@@ -42,7 +42,7 @@
     // Called by auth.js once signed in
     function onUserSignedIn(user) {
       userId = user.uid;
-      statusEl.innerText = "Signed in as " + user.email;
+      document.getElementById("status").innerText = "Signed in as " + user.email;
       loadChecklist();
     }
 
