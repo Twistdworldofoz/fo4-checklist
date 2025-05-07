@@ -1,4 +1,4 @@
-let userId = null;
+
 const firebaseConfig = {
   apiKey: "AIzaSyA5tEVBQeoWAJjZsjO3TJvEKuffy_uilDM",
   authDomain: "fo4-checklist.firebaseapp.com",
