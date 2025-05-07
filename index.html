@@ -125,6 +125,16 @@
             <textarea id="note-${item.id}" placeholder="Your notes..."></textarea>
           `;
           section.appendChild(box);
+          const checkbox = box.querySelector('input[type="checkbox"]');
+          const desc = box.querySelector('div');
+          const notes = box.querySelector('textarea');
+
+          checkbox.addEventListener('change', () => {
+            const hidden = checkbox.checked;
+            desc.style.display = hidden ? 'none' : '';
+            notes.style.display = hidden ? 'none' : '';
+});
+
         });
         checklistContainer.appendChild(section);
       }
@@ -133,8 +143,15 @@
         const item = checklistData[id];
         const cb = document.getElementById("cb-" + id);
         const note = document.getElementById("note-" + id);
-        if (cb) cb.checked = item.checked;
-        if (note) note.value = item.note || "";
+        if (cb) {
+        cb.checked = item.checked;
+        const desc = cb.closest('.achievement').querySelector('div');
+        const notes = cb.closest('.achievement').querySelector('textarea');
+        const hidden = item.checked;
+        if (desc) desc.style.display = hidden ? 'none' : '';
+        if (notes) notes.style.display = hidden ? 'none' : '';
+      }
+      if (note) note.value = item.note || "";
       }
 
       document.querySelectorAll('input[type=checkbox], textarea').forEach(el => {
