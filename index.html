@@ -22,6 +22,11 @@
 </head>
 <body>
   <h1>Fallout 4 Achievement Checklist</h1>
+  <label style="display:block; margin: 1rem 0;">
+  <input type="checkbox" id="hideCheckedToggle" />
+  Hide completed achievements
+  </label>
+
   <p id="status">Loading...</p>
   <!--<button id="logoutBtn" style="display: none;">Logout</button>-->
 
@@ -187,8 +192,24 @@
           });
         });
         checklistContainer.appendChild(section);
+ 
       }
+      const toggle = document.getElementById("hideCheckedToggle");
+if (toggle) {
+  toggle.addEventListener("change", () => {
+    const hideChecked = toggle.checked;
+    document.querySelectorAll('.achievement').forEach(box => {
+      const cb = box.querySelector('input[type=checkbox]');
+      box.style.display = hideChecked && cb.checked ? 'none' : '';
+    });
+  });
 
+  // Apply toggle immediately if it's already checked on load
+  if (toggle.checked) {
+    toggle.dispatchEvent(new Event('change'));
+  }
+}
+      
       for (const id in checklistData) {
         const item = checklistData[id];
         const cb = document.getElementById("cb-" + id);
