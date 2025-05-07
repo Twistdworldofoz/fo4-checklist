@@ -14,10 +14,31 @@ const auth = firebase.auth();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   .then(() => {
-    if (!auth.currentUser) {
-      return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    // Wait for auth state to be ready
+    return new Promise(resolve => {
+      const unsub = auth.onAuthStateChanged(user => {
+        unsub(); // stop listening
+        resolve(user);
+      });
+    });
+  })
+  .then(user => {
+    if (user) {
+      // already signed in
+      if (typeof onUserSignedIn === "function") onUserSignedIn(user);
+    } else {
+      // not signed in yet — trigger login
+      return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        .then(result => {
+          if (typeof onUserSignedIn === "function") onUserSignedIn(result.user);
+        });
     }
   })
+  .catch(err => {
+    const statusEl = document.getElementById("status");
+    if (statusEl) statusEl.innerText = "Auth error: " + err.message;
+  });
+
   .then(result => {
     const user = auth.currentUser || result.user;
     if (user && typeof onUserSignedIn === "function") {
