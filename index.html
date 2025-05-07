@@ -68,6 +68,7 @@
       data['Automatron'] = [];
       data['Far Harbor'] = [];
       data['Nuka-World'] = [];
+      data['Contraptions Workshop'] = [];
       data['Vault-Tec Workshop'] = [];
       data['Base Game'].push({id: '0', name: `War Never Changes`, desc: `Enter The Wasteland`});
       data['Base Game'].push({id: '1', name: `When Freedom Calls`, desc: `Complete "When Freedom Calls"`});
@@ -118,31 +119,47 @@
       data['Base Game'].push({id: '46', name: `Commonwealth Citizen`, desc: `Reach Level 10`});
       data['Base Game'].push({id: '47', name: `Unstoppable Wanderer`, desc: `Reach Level 25`});
       data['Base Game'].push({id: '48', name: `Legend Of The Wastes`, desc: `Reach Level 50`});
-      data['Automatron'].push({id: '49', name: `Mechanical Menace`, desc: `Complete "Mechanical Menace"`});
-      data['Automatron'].push({id: '50', name: `Headhunting`, desc: `Complete "Headhunting"`});
-      data['Automatron'].push({id: '51', name: `Restoring Order`, desc: `Complete "Restoring Order"`});
-      data['Automatron'].push({id: '52', name: `The Most Toys`, desc: `Build 10 Robot Mods`});
-      data['Far Harbor'].push({id: '53', name: `Far From Home`, desc: `Complete "Far From Home"`});
-      data['Far Harbor'].push({id: '54', name: `Where You Belong`, desc: `Complete "Where You Belong"`});
-      data['Far Harbor'].push({id: '55', name: `Close To Home`, desc: `Complete "Close To Home"`});
-      data['Far Harbor'].push({id: '56', name: `The Way Life Should Be`, desc: `Complete "The Way Life Should Be"`});
-      data['Far Harbor'].push({id: '57', name: `Cleansing the Land`, desc: `Complete "Cleansing the Land"`});
-      data['Far Harbor'].push({id: '58', name: `The Islander's Almanac`, desc: `Collect all issues of "The Islander's Almanac"`});
-      data['Far Harbor'].push({id: '59', name: `Hooked`, desc: `Defeat 30 Far Harbor Sea Creatures`});
-      data['Vault-Tec Workshop'].push({id: '60', name: `Vault Dweller`, desc: `Complete "Vault-Tec Workshop"`});
-      data['Vault-Tec Workshop'].push({id: '61', name: `Better Living Underground`, desc: `Complete "Better Living Underground"`});
-      data['Vault-Tec Workshop'].push({id: '62', name: `Oversight`, desc: `Become Overseer`});
-      data['Vault-Tec Workshop'].push({id: '63', name: `A Vault For My Vault`, desc: `Equip Vault 88 Suit and Pip-Boy on a Settler`});
-      data['Nuka-World'].push({id: '64', name: `All Aboard`, desc: `Complete "All Aboard"`});
-      data['Nuka-World'].push({id: '65', name: `Taken for a Ride`, desc: `Complete "Taken for a Ride"`});
-      data['Nuka-World'].push({id: '66', name: `The Grand Tour`, desc: `Complete "The Grand Tour"`});
-      data['Nuka-World'].push({id: '67', name: `Home Sweet Home`, desc: `Complete "Home Sweet Home"`});
-      data['Nuka-World'].push({id: '68', name: `Power Play`, desc: `Complete "Power Play"`});
-      data['Nuka-World'].push({id: '69', name: `Raiding for a Living`, desc: `Complete 12 Raider Jobs`});
-      data['Nuka-World'].push({id: '70', name: `Diebrarian`, desc: `Collect every issue of Scav! Magazine`});
-      data['Nuka-World'].push({id: '71', name: `Beverageer`, desc: `Create 20 Different Nuka-Cola Mixes`});
-      data['Nuka-World'].push({id: '72', name: `All Sugared Up`, desc: `Defeat 40 Nuka-World Creatures`});
-      data['Nuka-World'].push({id: '73', name: `Eyes on the Prize`, desc: `Redeem 100,000 Tickets at the Nuka-Cade`});
+      data['Base Game'].push({id: '49', name: `Prepared for the Future`, desc: `Decide the Fate of the Commonwealth`});
+
+      data['Automatron'].push({id: '50', name: `Mechanical Menace`, desc: `Complete "Mechanical Menace"`});
+      data['Automatron'].push({id: '51', name: `Headhunting`, desc: `Complete "Headhunting"`});
+      data['Automatron'].push({id: '52', name: `Restoring Order`, desc: `Complete "Restoring Order"`});
+      data['Automatron'].push({id: '53', name: `Robot Hunter`, desc: `Unlock 10 Robot Mods`}); 
+      data['Automatron'].push({id: '54', name: `The Most Toys`, desc: `Build 10 Robot Mods`});
+
+      data['Wasteland Workshop'].push({id: '55', name: `Docile`, desc: `Have 5 Tamed Creatures in a Settlement`});
+      data['Wasteland Workshop'].push({id: '56', name: `Instigator`, desc: `Start a Spectated Arena Fight in a Settlement`});
+      data['Wasteland Workshop'].push({id: '57', name: `Trapper`, desc: `Build One of Every Cage Type`});
+      
+      data['Far Harbor'].push({id: '58', name: `Far From Home`, desc: `Complete "Far From Home"`});
+      data['Far Harbor'].push({id: '59', name: `Where You Belong`, desc: `Complete "Where You Belong"`});
+      data['Far Harbor'].push({id: '60', name: `The Way Life Should Be`, desc: `Complete "The Way Life Should Be"`});
+      data['Far Harbor'].push({id: '61', name: `Cleansing The Land`, desc: `Complete "Cleansing The Land"`});
+      data['Far Harbor'].push({id: '62', name: `Close to Home`, desc: `Complete "Close to Home"`});
+      data['Far Harbor'].push({id: '63', name: `The Islander's Almanac`, desc: `Collect all issues of "The Islander's Almanac"`});
+      data['Far Harbor'].push({id: '64', name: `Hooked`, desc: `Defeat 30 Far Harbor Sea Creatures`});
+      data['Far Harbor'].push({id: '65', name: `New England Vacationer`, desc: `Discover 20 Far Harbor Locations`});
+      data['Far Harbor'].push({id: '66', name: `Push Back The Fog`, desc: `Unlock 3 Far Harbor Workshop Locations`});
+      data['Far Harbor'].push({id: '67', name: `Just Add Saltwater`, desc: `Cook One of the New Far Harbor Recipes`});
+
+      data['Contraptions Workshop'].push({id: '68', name: `Show Off`, desc: `Display a weapon on a weapon rack, armor on an armor rack, and power armor in a power armor display.`});
+      data['Contraptions Workshop'].push({id: '69', name: `Time Out`, desc: `Assign a settler to a pillory.`});
+      data['Contraptions Workshop'].push({id: '70', name: `Mass Production`, desc: `Produce 100 objects from your builders.`});   
+      
+      data['Vault-Tec Workshop'].push({id: '71', name: `Oversight`, desc: `Become Overseer`});
+      data['Vault-Tec Workshop'].push({id: '72', name: `Better Living Underground`, desc: `Complete "Better Living Underground"`});
+      data['Vault-Tec Workshop'].push({id: '73', name: `Vault Dweller`, desc: `Complete "Vault-Tec Workshop"`});
+      
+      data['Nuka-World'].push({id: '74', name: `Raiding for a Living`, desc: `Complete 12 quests for any Nuka-World Raider Gangs`});
+      data['Nuka-World'].push({id: '75', name: `Diebrarian`, desc: `Collect every issue of Scav! Magazine`});
+      data['Nuka-World'].push({id: '76', name: `Beverageer`, desc: `Create 20 different flavors of Nuka-Cola`});
+      data['Nuka-World'].push({id: '77', name: `Hostile Takeover`, desc: `Establish 8 Raider Camps in the Commonwealth`});
+      data['Nuka-World'].push({id: '78', name: `All Sugared Up`, desc: `Defeat 40 Nuka-World Creatures while under the effect of any Nuka-Mix flavor`});
+      data['Nuka-World'].push({id: '79', name: `Eyes on the Prize`, desc: `Redeem 100,000 tickets at the Nuka-Cade`});
+      data['Nuka-World'].push({id: '80', name: `Taken for a Ride`, desc: `Complete "Taken for a Ride"`});
+      data['Nuka-World'].push({id: '81', name: `The Grand Tour`, desc: `Complete "The Grand Tour"`});
+      data['Nuka-World'].push({id: '82', name: `Home Sweet Home`, desc: `Complete "Home Sweet Home"`});
+      data['Nuka-World'].push({id: '83', name: `Power Play`, desc: `Complete "Power Play"`});
 
 
       for (const [dlc, items] of Object.entries(data)) {
