@@ -47,15 +47,19 @@
     const checklistContainer = document.getElementById("checklist");
     const statusEl = document.getElementById("status");
 
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .then(res => {
-        userId = res.user.uid;
-        statusEl.innerText = "Signed in as " + res.user.email;
-        loadChecklist();
-      })
-      .catch(err => {
-        statusEl.innerText = "Auth error: " + err.message;
-      });
+   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  })
+  .then(res => {
+    userId = res.user.uid;
+    statusEl.innerText = "Signed in as " + res.user.email;
+    loadChecklist();
+  })
+  .catch(err => {
+    statusEl.innerText = "Auth error: " + err.message;
+  });
+
 
     const checklistData = {};
 
