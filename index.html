@@ -50,13 +50,17 @@
   loadChecklist();
 }
 
-    async function loadChecklist() {
-      const snapshot = await db.collection("checklists").doc(userId).get();
-      if (snapshot.exists) {
-        Object.assign(checklistData, snapshot.data());
-      }
-      renderChecklist();
-    }
+  async function loadChecklist() {
+  console.log("📥 Loading checklist for:", userId);
+  const snapshot = await db.collection("checklists").doc(userId).get();
+  if (snapshot.exists) {
+    console.log("📄 Checklist data:", snapshot.data());
+    Object.assign(checklistData, snapshot.data());
+  } else {
+    console.warn("No checklist found for user.");
+  }
+  renderChecklist();
+}
 
     function renderChecklist() {
       const data = {};
