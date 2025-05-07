@@ -49,7 +49,7 @@
     const checklistData = {};
 
     function updateCheckCounter() {
-      const checkboxes = document.querySelectorAll('input[type=checkbox]');
+      const checkboxes = document.querySelectorAll('.achievement input[type=checkbox]');
       const checked = [...checkboxes].filter(cb => cb.checked).length;
       const total = checkboxes.length;
       document.getElementById("checkCounter").innerText = `${checked} of ${total} completed`;
