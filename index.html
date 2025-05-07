@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="google" content="notranslate">
   <title>FO4 Achievement Checklist</title>
-
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
   <style>
     body { font-family: sans-serif; padding: 1rem; background: #111; color: #eee; }
     h2 { border-bottom: 1px solid #444; margin-top: 2rem; }
@@ -18,34 +15,37 @@
     input[type="checkbox"] { margin-right: 0.5rem; }
     textarea { width: 100%; height: 60px; margin-top: 4px; background: #222; color: #eee; border: 1px solid #333; }
     .achievement { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dotted #444; }
-    ul { margin-bottom: 2rem; }
+    nav a { margin-right: 1rem; color: #eee; text-decoration: none; }
+    nav a:visited { color: #eee; }
+    #checkCounter { margin-bottom: 1rem; font-weight: bold; }
   </style>
 </head>
 <body>
   <h1>Fallout 4 Achievement Checklist</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="juggernaut.html">Juggernaut Build</a>
+    <a href="wasteland-commando.html">Commando Build</a>
+    <a href="power-armor.html">Power Armor Build</a>
+  </nav>
+
   <label style="display:block; margin: 1rem 0;">
-  <input type="checkbox" id="hideCheckedToggle" />
-  Hide completed achievements
+    <input type="checkbox" id="hideCheckedToggle" />
+    Hide completed achievements
   </label>
 
-  <p id="status">Loading...</p>
-  <!--<button id="logoutBtn" style="display: none;">Logout</button>-->
-
-  <h2>Build Guides</h2>
-  <ul>
-    <li><a href="juggernaut.html">Juggernaut Survival Build</a></li>
-    <li><a href="wasteland-commando.html">Wasteland Commando Build</a></li>
-    <li><a href="power-armor.html">Power Armor Survival Build</a></li>
-  </ul>
   <p id="checkCounter">0 of 0 completed</p>
+  <p id="status">Loading...</p>
+  <button id="logoutBtn" style="display: none;">Logout</button>
   <div id="checklist"></div>
+
   <script src="auth.js"></script>
-  <!-- Your main app logic (includes onUserSignedIn) -->
   <script>
     const db = firebase.firestore();
     let userId = null;
     const checklistContainer = document.getElementById("checklist");
     const statusEl = document.getElementById("status");
+
     const checklistData = {};
 
     function updateCheckCounter() {
@@ -54,28 +54,22 @@
       const total = checkboxes.length;
       document.getElementById("checkCounter").innerText = `${checked} of ${total} completed`;
     }
+
+    function onUserSignedIn(user) {
+      userId = user.uid;
+      statusEl.innerText = "Signed in as " + user.email;
+      loadChecklist();
+    }
+
+    async function loadChecklist() {
+      const snapshot = await db.collection("checklists").doc(userId).get();
+      if (snapshot.exists) {
+        Object.assign(checklistData, snapshot.data());
+      }
+      renderChecklist();
+    }
+
     
-
-  function onUserSignedIn(user) {
-  console.log("onUserSignedIn called");
-  console.log("User:", user.email);
-  userId = user.uid;
-  statusEl.innerText = "Signed in as " + user.email;
-  loadChecklist();
-}
-
-  async function loadChecklist() {
-  console.log("📥 Loading checklist for:", userId);
-  const snapshot = await db.collection("checklists").doc(userId).get();
-  if (snapshot.exists) {
-    console.log("📄 Checklist data:", snapshot.data());
-    Object.assign(checklistData, snapshot.data());
-  } else {
-    console.warn("No checklist found for user.");
-  }
-  renderChecklist();
-}
-
     function renderChecklist() {
       const data = {};
       data['Base Game'] = [];
@@ -176,7 +170,7 @@
       data['Nuka-World'].push({id: '82', name: `Home Sweet Home`, desc: `Complete "Home Sweet Home"`});
       data['Nuka-World'].push({id: '83', name: `Power Play`, desc: `Complete "Power Play"`});
 
-
+      
       for (const [dlc, items] of Object.entries(data)) {
         const section = document.createElement('section');
         section.innerHTML = `<h2>${dlc}</h2>`;
@@ -202,24 +196,22 @@
           });
         });
         checklistContainer.appendChild(section);
- 
       }
-      const toggle = document.getElementById("hideCheckedToggle");
-if (toggle) {
-  toggle.addEventListener("change", () => {
-    const hideChecked = toggle.checked;
-    document.querySelectorAll('.achievement').forEach(box => {
-      const cb = box.querySelector('input[type=checkbox]');
-      box.style.display = hideChecked && cb.checked ? 'none' : '';
-    });
-  });
 
-  // Apply toggle immediately if it's already checked on load
-  if (toggle.checked) {
-    toggle.dispatchEvent(new Event('change'));
-  }
-}
-      
+      const toggle = document.getElementById("hideCheckedToggle");
+      if (toggle) {
+        toggle.addEventListener("change", () => {
+          const hideChecked = toggle.checked;
+          document.querySelectorAll('.achievement').forEach(box => {
+            const cb = box.querySelector('input[type=checkbox]');
+            box.style.display = hideChecked && cb.checked ? 'none' : '';
+          });
+        });
+        if (toggle.checked) {
+          toggle.dispatchEvent(new Event('change'));
+        }
+      }
+
       for (const id in checklistData) {
         const item = checklistData[id];
         const cb = document.getElementById("cb-" + id);
@@ -238,9 +230,11 @@ if (toggle) {
       document.querySelectorAll('input[type=checkbox], textarea').forEach(el => {
         el.addEventListener('change', () => {
           saveProgress();
-          if (el.type === "checkbox") updateCheckCounter();  // 👈 add this
+          if (el.type === "checkbox") updateCheckCounter();
         });
       });
+
+      updateCheckCounter();
     }
 
     function saveProgress() {
