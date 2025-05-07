@@ -1,5 +1,3 @@
-// auth.js
-
 const firebaseConfig = {
   apiKey: "AIzaSyA5tEVBQeoWAJjZsjO3TJvEKuffy_uilDM",
   authDomain: "fo4-checklist.firebaseapp.com",
@@ -14,7 +12,6 @@ const auth = firebase.auth();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   .then(() => {
-    // Wait for auth state to be ready
     return new Promise(resolve => {
       const unsub = auth.onAuthStateChanged(user => {
         unsub(); // stop listening
@@ -24,10 +21,8 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   })
   .then(user => {
     if (user) {
-      // already signed in
       if (typeof onUserSignedIn === "function") onUserSignedIn(user);
     } else {
-      // not signed in yet — trigger login
       return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
         .then(result => {
           if (typeof onUserSignedIn === "function") onUserSignedIn(result.user);
@@ -39,19 +34,9 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     if (statusEl) statusEl.innerText = "Auth error: " + err.message;
   });
 
-  .then(result => {
-    const user = auth.currentUser || result.user;
-    if (user && typeof onUserSignedIn === "function") {
-      onUserSignedIn(user);
-    }
-  })
-  .catch(err => {
-    const statusEl = document.getElementById("status");
-    if (statusEl) statusEl.innerText = "Auth error: " + err.message;
-  });
-
+// Redirect to home if logged out
 auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "index.html";
+  if (!user && location.pathname !== "/index.html") {
+    location.href = "index.html";
   }
 });
