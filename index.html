@@ -5,6 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FO4 Achievement Checklist</title>
+    <h2>Build Guides</h2>
+<ul>
+  <li><a href="juggernaut.html">Juggernaut Survival Build</a></li>
+  <li><a href="wasteland-commando.html">Wasteland Commando Build</a></li>
+  <li><a href="power-armor.html">Power Armor Survival Build</a></li>
+</ul>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -22,27 +28,40 @@
   <p id="status">Loading...</p>
   <div id="checklist"></div>
 
-  <h2>Build Guides</h2>
-  <ul>
-    <li><a href="juggernaut.html">Juggernaut Survival Build</a></li>
-    <li><a href="wasteland-commando.html">Wasteland Commando Build</a></li>
-    <li><a href="power-armor.html">Power Armor Survival Build</a></li>
-  </ul>
-
-  <script src="auth.js"></script>
   <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA5tEVBQeoWAJjZsjO3TJvEKuffy_uilDM",
+    authDomain: "fo4-checklist.firebaseapp.com",
+    projectId: "fo4-checklist",
+    storageBucket: "fo4-checklist.firebaseapp.com",
+    messagingSenderId: "8298158004",
+    appId: "1:8298158004:web:f8fe5e16b4fc93f9397921"
+
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
+
     let userId = null;
     const checklistContainer = document.getElementById("checklist");
     const statusEl = document.getElementById("status");
-    const checklistData = {};
 
-    // Called by auth.js once signed in
-    function onUserSignedIn(user) {
-      userId = user.uid;
-      statusEl.innerText = "Signed in as " + user.email;
-      loadChecklist();
-    }
+   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  })
+  .then(res => {
+    userId = res.user.uid;
+    statusEl.innerText = "Signed in as " + res.user.email;
+    loadChecklist();
+  })
+  .catch(err => {
+    statusEl.innerText = "Auth error: " + err.message;
+  });
+
+
+    const checklistData = {};
 
     async function loadChecklist() {
       const snapshot = await db.collection("checklists").doc(userId).get();
@@ -116,6 +135,16 @@
             <textarea id="note-${item.id}" placeholder="Your notes..."></textarea>
           `;
           section.appendChild(box);
+          const checkbox = box.querySelector('input[type="checkbox"]');
+          const desc = box.querySelector('div');
+          const notes = box.querySelector('textarea');
+
+          checkbox.addEventListener('change', () => {
+            const hidden = checkbox.checked;
+            desc.style.display = hidden ? 'none' : '';
+            notes.style.display = hidden ? 'none' : '';
+});
+
         });
         checklistContainer.appendChild(section);
       }
@@ -124,8 +153,15 @@
         const item = checklistData[id];
         const cb = document.getElementById("cb-" + id);
         const note = document.getElementById("note-" + id);
-        if (cb) cb.checked = item.checked;
-        if (note) note.value = item.note || "";
+        if (cb) {
+        cb.checked = item.checked;
+        const desc = cb.closest('.achievement').querySelector('div');
+        const notes = cb.closest('.achievement').querySelector('textarea');
+        const hidden = item.checked;
+        if (desc) desc.style.display = hidden ? 'none' : '';
+        if (notes) notes.style.display = hidden ? 'none' : '';
+      }
+      if (note) note.value = item.note || "";
       }
 
       document.querySelectorAll('input[type=checkbox], textarea').forEach(el => {
