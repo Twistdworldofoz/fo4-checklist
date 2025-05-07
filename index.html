@@ -37,7 +37,7 @@
   <!-- Your main app logic (includes onUserSignedIn) -->
   <script>
     const db = firebase.firestore();
-    let userId = null;
+    let userId = user.uid;
     const checklistContainer = document.getElementById("checklist");
     const statusEl = document.getElementById("status");
     const checklistData = {};
