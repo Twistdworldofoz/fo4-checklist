@@ -16,13 +16,13 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 // Wait until Firebase tells us if user is signed in
 auth.onAuthStateChanged(user => {
   if (user) {
-    // ✅ Already logged in
     if (typeof onUserSignedIn === "function") onUserSignedIn(user);
+    showLogout();
   } else {
-    // ❌ Not signed in — show popup once
     auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then(result => {
         if (typeof onUserSignedIn === "function") onUserSignedIn(result.user);
+        showLogout();
       })
       .catch(err => {
         const statusEl = document.getElementById("status");
@@ -30,3 +30,16 @@ auth.onAuthStateChanged(user => {
       });
   }
 });
+
+// Show logout button once signed in
+function showLogout() {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.style.display = "inline-block";
+    logoutBtn.addEventListener("click", () => {
+      auth.signOut().then(() => {
+        window.location.href = "index.html"; // reload or redirect
+      });
+    });
+  }
+}
