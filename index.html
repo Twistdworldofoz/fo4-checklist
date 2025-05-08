@@ -42,13 +42,20 @@
       return;
     }
 
-    container.innerHTML = data.map(ach => `
-      <div>
-        <strong>${ach.name}</strong><br>
-        <i>${ach.description || "No description available"}</i><br>
-        <img src="${ach.mediaAssets?.[0]?.url || ''}" alt="icon" height="40">
-      </div><br>
-    `).join("");
+    container.innerHTML = data.map(ach => {
+  const name = ach?.rewards?.[0]?.name || ach?.name || "Unnamed";
+  const desc = ach?.description || ach?.titleAssociations?.[0]?.name || "No description";
+  const icon = ach?.mediaAssets?.find(asset => asset.type === "Icon")?.url || "";
+
+  return `
+    <div>
+      <strong>${name}</strong><br>
+      <i>${desc}</i><br>
+      ${icon ? `<img src="${icon}" alt="icon" height="40">` : "No icon"}
+    </div><br>
+  `;
+}).join("");
+
   })
   .catch(err => {
     document.getElementById("proxyAchievements").innerText =
