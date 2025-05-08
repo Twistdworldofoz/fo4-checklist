@@ -30,39 +30,27 @@
   <script src="auth.js"></script>
 <script>
 auth.currentUser.getIdToken().then(token => {
-  fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
-    method: "GET",
-    headers: {
-      "Authorization": "Bearer " + token
-    }
-  })
+fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements")
   .then(res => res.json())
   .then(data => {
     const container = document.getElementById("proxyAchievements");
-    container.innerHTML = ""; // Clear loading text
 
     if (!Array.isArray(data)) {
-      container.innerHTML = "No valid achievement data found.";
+      container.innerText = "Expected array but got: " + JSON.stringify(data);
       return;
     }
 
-    data.forEach(entry => {
-      const name = entry.name || "Unknown";
-      const state = entry.progressState || "Unknown";
-      const unlocked = entry.progression?.timeUnlocked || "Not unlocked";
-
-      const div = document.createElement("div");
-      div.style.marginBottom = "1rem";
-      div.innerHTML = `
-        <strong>${name}</strong><br>
-        State: ${state}<br>
-        Time Unlocked: ${unlocked}
-      `;
-      container.appendChild(div);
-    });
+    container.innerHTML = data.map(ach => `
+      <div>
+        <strong>${ach.name}</strong><br>
+        <i>${ach.description || "No description available"}</i><br>
+        <img src="${ach.mediaAssets?.[0]?.url || ''}" alt="icon" height="40">
+      </div><br>
+    `).join("");
   })
   .catch(err => {
-    document.getElementById("proxyAchievements").innerText = "Error loading achievements: " + err.message;
+    document.getElementById("proxyAchievements").innerText =
+      "Error loading achievements: " + err.message;
   });
 });
 </script>
