@@ -49,8 +49,17 @@
 
     async function renderChecklist() {
       try {
-        const res = await fetch("https://getachievements-w7vvbovawq-uc.a.run.app");
-        const apiData = await res.json();
+        const user = firebase.auth().currentUser;
+const idToken = await user.getIdToken(true);
+
+const res = await fetch("https://getachievements-w7vvbovawq-uc.a.run.app", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer " + idToken
+  }
+});
+
+const apiData = await res.json();
         const data = {};
 
         apiData.achievements.forEach((ach, index) => {
