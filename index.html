@@ -29,29 +29,37 @@
 
 <script src="auth.js"></script>
 <script>
-  auth.currentUser?.getIdToken().then(token => {
-    fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements")
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById("proxyAchievements");
+auth.currentUser.getIdToken().then(token => {
+  fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("proxyAchievements");
 
-        if (!Array.isArray(data)) {
-          container.innerText = "Expected an array of achievement names.";
-          return;
-        }
+    if (!Array.isArray(data)) {
+      container.innerText = "Unexpected response format.";
+      return;
+    }
 
-        container.innerHTML = data.map(name => `
-          <div class="achievement">
-            <strong>${name}</strong>
-          </div>
-        `).join("");
-      })
-      .catch(err => {
-        document.getElementById("proxyAchievements").innerText =
-          "Error loading achievements: " + err.message;
-      });
+    container.innerHTML = data.map(ach => `
+      <div class="achievement">
+        <strong>${ach.name}</strong><br>
+        <em>Status:</em> ${ach.progressState || "Unknown"}<br>
+        <em>Unlocked:</em> ${ach.progression?.timeUnlocked ? new Date(ach.progression.timeUnlocked).toLocaleString() : "Not yet"}<br>
+        <br>
+      </div>
+    `).join("");
+  })
+  .catch(err => {
+    document.getElementById("proxyAchievements").innerText =
+      "Error loading achievements: " + err.message;
   });
+});
 </script>
+
 
 </body>
 </html>
