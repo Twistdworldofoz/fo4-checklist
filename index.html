@@ -32,28 +32,29 @@
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       user.getIdToken().then(token => {
-        fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
-          method: "GET",
-          headers: {
-            "Authorization": "Bearer " + token
-          }
-        })
-        .then(res => {
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          return res.json();
-        })
-        .then(data => {
-          const testBox = document.getElementById("proxyAchievements");
-          if (data.achievements && Array.isArray(data.achievements)) {
-            const names = data.achievements.map(a => a.name).filter(Boolean).join("\n");
-            testBox.innerText = names || "No names found in response.";
-          } else {
-            testBox.innerText = "No 'achievements' array found in response.";
-          }
-        })
-        .catch(err => {
-          document.getElementById("proxyAchievements").innerText = "Error loading achievements: " + err.message;
-        });
+     fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("proxyAchievements");
+
+    if (!Array.isArray(data)) {
+      container.innerText = "Expected array but got: " + JSON.stringify(data);
+      return;
+    }
+
+    container.innerHTML = data.map(ach => `
+      <div>
+        <strong>${ach.name}</strong><br>
+        <i>${ach.description || "No description available"}</i><br>
+        <img src="${ach.mediaAssets?.[0]?.url || ''}" alt="icon" height="40">
+      </div><br>
+    `).join("");
+  })
+  .catch(err => {
+    document.getElementById("proxyAchievements").innerText =
+      "Error loading achievements: " + err.message;
+  });
+
       });
     }
   });
