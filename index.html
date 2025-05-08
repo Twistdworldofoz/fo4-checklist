@@ -29,36 +29,45 @@
 
 <script src="auth.js"></script>
 <script>
-auth.currentUser.getIdToken().then(token => {
-  fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
-    headers: {
-      "Authorization": "Bearer " + token
-    }
-  })
-  .then(res => res.json())
-  .then(data => {
-    const container = document.getElementById("proxyAchievements");
-
-    if (!Array.isArray(data)) {
-      container.innerText = "Unexpected response format.";
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      document.getElementById("proxyAchievements").innerText =
+        "User not authenticated.";
       return;
     }
 
-    container.innerHTML = data.map(ach => `
-      <div class="achievement">
-        <strong>${ach.name}</strong><br>
-        <em>Status:</em> ${ach.progressState || "Unknown"}<br>
-        <em>Unlocked:</em> ${ach.progression?.timeUnlocked ? new Date(ach.progression.timeUnlocked).toLocaleString() : "Not yet"}<br>
-        <br>
-      </div>
-    `).join("");
-  })
-  .catch(err => {
-    document.getElementById("proxyAchievements").innerText =
-      "Error loading achievements: " + err.message;
+    user.getIdToken().then(token => {
+      fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("proxyAchievements");
+
+        if (!Array.isArray(data)) {
+          container.innerText = "Unexpected response format.";
+          return;
+        }
+
+        container.innerHTML = data.map(ach => `
+          <div class="achievement">
+            <strong>${ach.name}</strong><br>
+            <em>Status:</em> ${ach.progressState || "Unknown"}<br>
+            <em>Unlocked:</em> ${ach.progression?.timeUnlocked ? new Date(ach.progression.timeUnlocked).toLocaleString() : "Not yet"}<br>
+            <br>
+          </div>
+        `).join("");
+      })
+      .catch(err => {
+        document.getElementById("proxyAchievements").innerText =
+          "Error loading achievements: " + err.message;
+      });
+    });
   });
-});
 </script>
+
 
 
 </body>
