@@ -28,8 +28,7 @@
   <div id="proxyAchievements">Loading achievements from proxy...</div>
 
   <script src="auth.js"></script>
- <script>
-  // Wait for Firebase auth to be ready
+<script>
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       user.getIdToken().then(token => {
@@ -45,7 +44,12 @@
         })
         .then(data => {
           const testBox = document.getElementById("proxyAchievements");
-          testBox.innerText = JSON.stringify(data, null, 2);
+          if (data.achievements && Array.isArray(data.achievements)) {
+            const names = data.achievements.map(a => a.name).filter(Boolean).join("\n");
+            testBox.innerText = names || "No names found in response.";
+          } else {
+            testBox.innerText = "No 'achievements' array found in response.";
+          }
         })
         .catch(err => {
           document.getElementById("proxyAchievements").innerText = "Error loading achievements: " + err.message;
@@ -54,6 +58,7 @@
     }
   });
 </script>
+
 
 </body>
 </html>
