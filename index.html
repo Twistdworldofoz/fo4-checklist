@@ -27,32 +27,31 @@
   <h2>Proxy API Results (Test)</h2>
   <div id="proxyAchievements">Loading achievements from proxy...</div>
 
-  <script src="auth.js"></script>
-  <script>
-    auth.currentUser?.getIdToken().then(token => {
-      fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements")
-        .then(res => res.json())
-        .then(data => {
-          const container = document.getElementById("proxyAchievements");
+<script src="auth.js"></script>
+<script>
+  auth.currentUser?.getIdToken().then(token => {
+    fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements")
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("proxyAchievements");
 
-          if (!Array.isArray(data)) {
-            container.innerText = "Expected array but got: " + JSON.stringify(data);
-            return;
-          }
+        if (!Array.isArray(data)) {
+          container.innerText = "Expected an array of achievement names.";
+          return;
+        }
 
-          container.innerHTML = data.map(ach => `
-            <div class="achievement">
-              <strong>${ach.name || "Unnamed Achievement"}</strong><br>
-              <span>Status: ${ach.progressState || "Unknown"}</span><br>
-              <span>Unlocked: ${ach.progression?.timeUnlocked || "N/A"}</span>
-            </div>
-          `).join("");
-        })
-        .catch(err => {
-          document.getElementById("proxyAchievements").innerText =
-            "Error loading achievements: " + err.message;
-        });
-    });
-  </script>
+        container.innerHTML = data.map(name => `
+          <div class="achievement">
+            <strong>${name}</strong>
+          </div>
+        `).join("");
+      })
+      .catch(err => {
+        document.getElementById("proxyAchievements").innerText =
+          "Error loading achievements: " + err.message;
+      });
+  });
+</script>
+
 </body>
 </html>
