@@ -32,7 +32,7 @@
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       user.getIdToken().then(token => {
-        fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getachievements", {
+        fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
           method: "GET",
           headers: {
             "Authorization": "Bearer " + token
