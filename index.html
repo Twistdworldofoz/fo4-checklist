@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US" translate="no">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="google" content="notranslate">
   <title>FO4 Achievement Checklist</title>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+firebase.auth().currentUser.getIdToken().then(token => {
+  return fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  });
+})
+.then(res => res.json())
+.then(data => {
+  console.log("Achievements from function:", data);
+  document.getElementById("status").innerText = "Loaded " + data.length + " achievements from API.";
+  // Render or process data here...
+})
+.catch(err => {
+  console.error("Fetch error:", err);
+  document.getElementById("status").innerText = "Error loading checklist: " + err.message;
+});
+</script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
@@ -14,13 +34,28 @@
     input[type="checkbox"] { margin-right: 0.5rem; }
     textarea { width: 100%; height: 60px; margin-top: 4px; background: #222; color: #eee; border: 1px solid #333; }
     .achievement { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dotted #444; }
+    nav a { margin-right: 1rem; color: #eee; text-decoration: none; }
+    nav a:visited { color: #eee; }
+    #checkCounter { margin-bottom: 1rem; font-weight: bold; }
   </style>
 </head>
 <body>
   <h1>Fallout 4 Achievement Checklist</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="juggernaut.html">Juggernaut Build</a>
+    <a href="wasteland-commando.html">Commando Build</a>
+    <a href="power-armor.html">Power Armor Build</a>
+    <a href="All-achievements-guide.html">All achievements guide</a>
+  </nav>
+
+  <label style="display:block; margin: 1rem 0;">
+    <input type="checkbox" id="hideCheckedToggle" />
+    Hide completed achievements
+  </label>
+
+  <p id="checkCounter">0 of 0 completed</p>
   <p id="status">Loading...</p>
-  <label><input type="checkbox" id="hideCheckedToggle"> Hide completed</label>
-  <p id="counter"></p>
   <button id="logoutBtn" style="display: none;">Logout</button>
   <div id="checklist"></div>
 
@@ -30,8 +65,15 @@
     let userId = null;
     const checklistContainer = document.getElementById("checklist");
     const statusEl = document.getElementById("status");
-    const counterEl = document.getElementById("counter");
+
     const checklistData = {};
+
+    function updateCheckCounter() {
+      const checkboxes = document.querySelectorAll('.achievement input[type=checkbox]');
+      const checked = [...checkboxes].filter(cb => cb.checked).length;
+      const total = checkboxes.length;
+      document.getElementById("checkCounter").innerText = `${checked} of ${total} completed`;
+    }
 
     function onUserSignedIn(user) {
       userId = user.uid;
@@ -47,98 +89,172 @@
       renderChecklist();
     }
 
-    async function renderChecklist() {
-      try {
-        const user = firebase.auth().currentUser;
-const idToken = await user.getIdToken(true);
+    
+    function renderChecklist() {
+      const data = {};
+      data['Base Game'] = [];
+      data['Automatron'] = [];
+      data['Wasteland Workshop'] = [];
+      data['Far Harbor'] = [];
+      data['Contraptions Workshop'] = [];
+      data['Vault-Tec Workshop'] = [];
+      data['Nuka-World'] = [];
+      data['Base Game'].push({id: '0', name: `War Never Changes`, desc: `Enter The Wasteland`});
+      data['Base Game'].push({id: '1', name: `When Freedom Calls`, desc: `Complete "When Freedom Calls"`});
+      data['Base Game'].push({id: '2', name: `Unlikely Valentine`, desc: `Complete "Unlikely Valentine"`});
+      data['Base Game'].push({id: '3', name: `Reunions`, desc: `Complete "Reunions"`});
+      data['Base Game'].push({id: '4', name: `Dangerous Minds`, desc: `Complete "Dangerous Minds"`});
+      data['Base Game'].push({id: '5', name: `Hunter/Hunted`, desc: `Complete "Hunter/Hunted"`});
+      data['Base Game'].push({id: '6', name: `The Molecular Level`, desc: `Complete "The Molecular Level"`});
+      data['Base Game'].push({id: '7', name: `The Nuclear Option`, desc: `Complete "The Nuclear Option"`});
+      data['Base Game'].push({id: '8', name: `Institutionalized`, desc: `Complete "Institutionalized"`});
+      data['Base Game'].push({id: '9', name: `Mankind-Redefined`, desc: `Complete "Mankind-Redefined"`});
+      data['Base Game'].push({id: '10', name: `Powering Up`, desc: `Complete "Powering Up"`});
+      data['Base Game'].push({id: '11', name: `Nuclear Family`, desc: `Complete "Nuclear Family"`});
+      data['Base Game'].push({id: '12', name: `The First Step`, desc: `Join the Minutemen`});
+      data['Base Game'].push({id: '13', name: `Taking Independence`, desc: `Complete "Taking Independence"`});
+      data['Base Game'].push({id: '14', name: `Old Guns`, desc: `Complete "Old Guns"`});
+      data['Base Game'].push({id: '15', name: `Semper Invicta`, desc: `Join the Brotherhood of Steel`});
+      data['Base Game'].push({id: '16', name: `Blind Betrayal`, desc: `Complete "Blind Betrayal"`});
+      data['Base Game'].push({id: '17', name: `Ad Victoriam`, desc: `Complete "Ad Victoriam"`});
+      data['Base Game'].push({id: '18', name: `Tradecraft`, desc: `Join the Railroad`});
+      data['Base Game'].push({id: '19', name: `Underground Undercover`, desc: `Complete "Underground Undercover"`});
+      data['Base Game'].push({id: '20', name: `Rockets' Red Glare`, desc: `Complete "Rockets' Red Glare"`});
+      data['Base Game'].push({id: '21', name: `Sanctuary`, desc: `Complete "Sanctuary"`});
+      data['Base Game'].push({id: '22', name: `Community Organizer`, desc: `Ally with 3 Settlements`});
+      data['Base Game'].push({id: '23', name: `Benevolent Leader`, desc: `Reach Maximum Happiness in a Large Settlement`});
+      data['Base Game'].push({id: '24', name: `Gun-For-Hire`, desc: `Complete 10 Side Quests`});
+      data['Base Game'].push({id: '25', name: `Mercenary`, desc: `Complete 50 Misc. Objectives`});
+      data['Base Game'].push({id: '26', name: `Scavver`, desc: `Gather 1000 Resources Used For Crafting`});
+      data['Base Game'].push({id: '27', name: `What's Yours Is Mine`, desc: `Pick 50 Locks`});
+      data['Base Game'].push({id: '28', name: `RobCo's Worst Nightmare`, desc: `Hack 50 Terminals`});
+      data['Base Game'].push({id: '29', name: `Armed and Dangerous`, desc: `Create 50 Weapon Mods`});
+      data['Base Game'].push({id: '30', name: `Wasteland D.I.Y.`, desc: `Craft 100 Items`});
+      data['Base Game'].push({id: '31', name: `Never Go It Alone`, desc: `Recruit 5 Separate Companions`});
+      data['Base Game'].push({id: '32', name: `Lovable`, desc: `Reach Maximum Relationship Level with a Companion`});
+      data['Base Game'].push({id: '33', name: `Fix-Er-Upper`, desc: `Build 100 Workshop Items`});
+      data['Base Game'].push({id: '34', name: `Future Retro`, desc: `Play a Holotape Game`});
+      data['Base Game'].push({id: '35', name: `…The Harder They Fall`, desc: `Kill 5 Giant Creatures`});
+      data['Base Game'].push({id: '36', name: `Ranger Corps`, desc: `Discover 100 Locations`});
+      data['Base Game'].push({id: '37', name: `Print's Not Dead`, desc: `Read 20 Magazines`});
+      data['Base Game'].push({id: '38', name: `Prankster's Return`, desc: `Placed A Grenade Or Mine While Pickpocketing`});
+      data['Base Game'].push({id: '39', name: `Masshole`, desc: `Kill 300 People`});
+      data['Base Game'].push({id: '40', name: `Animal Control`, desc: `Kill 300 Creatures`});
+      data['Base Game'].push({id: '41', name: `Homerun!`, desc: `Get a Homerun`});
+      data['Base Game'].push({id: '42', name: `Touchdown!`, desc: `Get a Touchdown`});
+      data['Base Game'].push({id: '43', name: `They’re Not Dolls…`, desc: `Collect 10 Vault-Tec Bobbleheads`});
+      data['Base Game'].push({id: '44', name: `…They're Action Figures`, desc: `Collect 20 Vault-Tec Bobbleheads`});
+      data['Base Game'].push({id: '45', name: `Born Survivor`, desc: `Reach Level 5`});
+      data['Base Game'].push({id: '46', name: `Commonwealth Citizen`, desc: `Reach Level 10`});
+      data['Base Game'].push({id: '47', name: `Unstoppable Wanderer`, desc: `Reach Level 25`});
+      data['Base Game'].push({id: '48', name: `Legend Of The Wastes`, desc: `Reach Level 50`});
+      data['Base Game'].push({id: '49', name: `Prepared for the Future`, desc: `Decide the Fate of the Commonwealth`});
 
-const res = await fetch("https://getachievements-w7vvbovawq-uc.a.run.app", {
-  method: "GET",
-  headers: {
-    "Authorization": "Bearer " + idToken
-  }
-});
+      data['Automatron'].push({id: '50', name: `Mechanical Menace`, desc: `Complete "Mechanical Menace"`});
+      data['Automatron'].push({id: '51', name: `Headhunting`, desc: `Complete "Headhunting"`});
+      data['Automatron'].push({id: '52', name: `Restoring Order`, desc: `Complete "Restoring Order"`});
+      data['Automatron'].push({id: '53', name: `Robot Hunter`, desc: `Unlock 10 Robot Mods`}); 
+      data['Automatron'].push({id: '54', name: `The Most Toys`, desc: `Build 10 Robot Mods`});
 
-const apiData = await res.json();
-        const data = {};
+      data['Wasteland Workshop'].push({id: '55', name: `Docile`, desc: `Have 5 Tamed Creatures in a Settlement`});
+      data['Wasteland Workshop'].push({id: '56', name: `Instigator`, desc: `Start a Spectated Arena Fight in a Settlement`});
+      data['Wasteland Workshop'].push({id: '57', name: `Trapper`, desc: `Build One of Every Cage Type`});
+      
+      data['Far Harbor'].push({id: '58', name: `Far From Home`, desc: `Complete "Far From Home"`});
+      data['Far Harbor'].push({id: '59', name: `Where You Belong`, desc: `Complete "Where You Belong"`});
+      data['Far Harbor'].push({id: '60', name: `The Way Life Should Be`, desc: `Complete "The Way Life Should Be"`});
+      data['Far Harbor'].push({id: '61', name: `Cleansing The Land`, desc: `Complete "Cleansing The Land"`});
+      data['Far Harbor'].push({id: '62', name: `Close to Home`, desc: `Complete "Close to Home"`});
+      data['Far Harbor'].push({id: '63', name: `The Islander's Almanac`, desc: `Collect all issues of "The Islander's Almanac"`});
+      data['Far Harbor'].push({id: '64', name: `Hooked`, desc: `Defeat 30 Far Harbor Sea Creatures`});
+      data['Far Harbor'].push({id: '65', name: `New England Vacationer`, desc: `Discover 20 Far Harbor Locations`});
+      data['Far Harbor'].push({id: '66', name: `Push Back The Fog`, desc: `Unlock 3 Far Harbor Workshop Locations`});
+      data['Far Harbor'].push({id: '67', name: `Just Add Saltwater`, desc: `Cook One of the New Far Harbor Recipes`});
 
-        apiData.achievements.forEach((ach, index) => {
-          const category = ach.titleAssociations?.[0]?.name || "Other";
-          if (!data[category]) data[category] = [];
-          data[category].push({
-            id: `${index}`,
-            name: ach.name,
-            desc: ach.description
-          });
-        });
+      data['Contraptions Workshop'].push({id: '68', name: `Show Off`, desc: `Display a weapon on a weapon rack, armor on an armor rack, and power armor in a power armor display.`});
+      data['Contraptions Workshop'].push({id: '69', name: `Time Out`, desc: `Assign a settler to a pillory.`});
+      data['Contraptions Workshop'].push({id: '70', name: `Mass Production`, desc: `Produce 100 objects from your builders.`});   
+      
+      data['Vault-Tec Workshop'].push({id: '71', name: `Oversight`, desc: `Become Overseer`});
+      data['Vault-Tec Workshop'].push({id: '72', name: `Better Living Underground`, desc: `Complete "Better Living Underground"`});
+      data['Vault-Tec Workshop'].push({id: '73', name: `Vault Dweller`, desc: `Complete "Vault-Tec Workshop"`});
+      
+      data['Nuka-World'].push({id: '74', name: `Raiding for a Living`, desc: `Complete 12 quests for any Nuka-World Raider Gangs`});
+      data['Nuka-World'].push({id: '75', name: `Diebrarian`, desc: `Collect every issue of Scav! Magazine`});
+      data['Nuka-World'].push({id: '76', name: `Beverageer`, desc: `Create 20 different flavors of Nuka-Cola`});
+      data['Nuka-World'].push({id: '77', name: `Hostile Takeover`, desc: `Establish 8 Raider Camps in the Commonwealth`});
+      data['Nuka-World'].push({id: '78', name: `All Sugared Up`, desc: `Defeat 40 Nuka-World Creatures while under the effect of any Nuka-Mix flavor`});
+      data['Nuka-World'].push({id: '79', name: `Eyes on the Prize`, desc: `Redeem 100,000 tickets at the Nuka-Cade`});
+      data['Nuka-World'].push({id: '80', name: `Taken for a Ride`, desc: `Complete "Taken for a Ride"`});
+      data['Nuka-World'].push({id: '81', name: `The Grand Tour`, desc: `Complete "The Grand Tour"`});
+      data['Nuka-World'].push({id: '82', name: `Home Sweet Home`, desc: `Complete "Home Sweet Home"`});
+      data['Nuka-World'].push({id: '83', name: `Power Play`, desc: `Complete "Power Play"`});
 
-        for (const [dlc, items] of Object.entries(data)) {
-          const section = document.createElement('section');
-          section.innerHTML = `<h2>${dlc}</h2>`;
-          items.forEach(item => {
-            const box = document.createElement('div');
-            box.className = 'achievement';
-            box.innerHTML = `
-              <label><input type="checkbox" id="cb-${item.id}"> ${item.name}</label>
-              <div><i>${item.desc}</i></div>
-              <textarea id="note-${item.id}" placeholder="Your notes..."></textarea>
-            `;
-            section.appendChild(box);
+      
+      for (const [dlc, items] of Object.entries(data)) {
+        const section = document.createElement('section');
+        section.innerHTML = `<h2>${dlc}</h2>`;
+        items.forEach(item => {
+          const box = document.createElement('div');
+          box.className = 'achievement';
+          box.innerHTML = `
+            <label><input type="checkbox" id="cb-${item.id}"> ${item.name}</label>
+            <div><i>${item.desc}</i></div>
+            <textarea id="note-${item.id}" placeholder="Your notes..."></textarea>
+          `;
+          section.appendChild(box);
 
-            const checkbox = box.querySelector('input[type="checkbox"]');
-            const desc = box.querySelector('div');
-            const notes = box.querySelector('textarea');
+          const checkbox = box.querySelector('input[type="checkbox"]');
+          const desc = box.querySelector('div');
+          const notes = box.querySelector('textarea');
 
-            checkbox.addEventListener('change', () => {
-              const hidden = checkbox.checked;
-              desc.style.display = hidden ? 'none' : '';
-              notes.style.display = hidden ? 'none' : '';
-              updateCheckCounter();
-            });
-          });
-          checklistContainer.appendChild(section);
-        }
-
-        const toggle = document.getElementById("hideCheckedToggle");
-        if (toggle) {
-          toggle.addEventListener("change", () => {
-            const hideChecked = toggle.checked;
-            document.querySelectorAll('.achievement').forEach(box => {
-              const cb = box.querySelector('input[type=checkbox]');
-              box.style.display = hideChecked && cb.checked ? 'none' : '';
-            });
+          checkbox.addEventListener('change', () => {
+            const hidden = checkbox.checked;
+            desc.style.display = hidden ? 'none' : '';
+            notes.style.display = hidden ? 'none' : '';
             updateCheckCounter();
           });
-          if (toggle.checked) toggle.dispatchEvent(new Event('change'));
-        }
+        });
+        checklistContainer.appendChild(section);
+      }
 
-        for (const id in checklistData) {
-          const item = checklistData[id];
-          const cb = document.getElementById("cb-" + id);
-          const note = document.getElementById("note-" + id);
-          if (cb) {
-            cb.checked = item.checked;
-            const desc = cb.closest('.achievement').querySelector('div');
-            const notes = cb.closest('.achievement').querySelector('textarea');
-            const hidden = item.checked;
-            if (desc) desc.style.display = hidden ? 'none' : '';
-            if (notes) notes.style.display = hidden ? 'none' : '';
-          }
-          if (note) note.value = item.note || "";
-        }
-
-        document.querySelectorAll('input[type=checkbox], textarea').forEach(el => {
-          el.addEventListener('change', () => {
-            saveProgress();
-            if (el.type === "checkbox") updateCheckCounter();
+      const toggle = document.getElementById("hideCheckedToggle");
+      if (toggle) {
+        toggle.addEventListener("change", () => {
+          const hideChecked = toggle.checked;
+          document.querySelectorAll('.achievement').forEach(box => {
+            const cb = box.querySelector('input[type=checkbox]');
+            box.style.display = hideChecked && cb.checked ? 'none' : '';
           });
         });
-
-        updateCheckCounter();
-      } catch (err) {
-        statusEl.innerText = "Error loading checklist: " + err.message;
-        console.error("Checklist fetch error:", err);
+        if (toggle.checked) {
+          toggle.dispatchEvent(new Event('change'));
+        }
       }
+
+      for (const id in checklistData) {
+        const item = checklistData[id];
+        const cb = document.getElementById("cb-" + id);
+        const note = document.getElementById("note-" + id);
+        if (cb) {
+          cb.checked = item.checked;
+          const desc = cb.closest('.achievement').querySelector('div');
+          const notes = cb.closest('.achievement').querySelector('textarea');
+          const hidden = item.checked;
+          if (desc) desc.style.display = hidden ? 'none' : '';
+          if (notes) notes.style.display = hidden ? 'none' : '';
+        }
+        if (note) note.value = item.note || "";
+      }
+
+      document.querySelectorAll('input[type=checkbox], textarea').forEach(el => {
+        el.addEventListener('change', () => {
+          saveProgress();
+          if (el.type === "checkbox") updateCheckCounter();
+        });
+      });
+
+      updateCheckCounter();
     }
 
     function saveProgress() {
@@ -147,17 +263,11 @@ const apiData = await res.json();
         const id = el.querySelector('input').id.replace('cb-', '');
         const checked = el.querySelector('input').checked;
         const note = el.querySelector('textarea').value;
-        newData[id] = { checked, note };
+        newData[id] = {checked, note};
       });
       db.collection("checklists").doc(userId).set(newData).then(() => {
         statusEl.innerText = "Progress saved.";
       });
-    }
-
-    function updateCheckCounter() {
-      const total = document.querySelectorAll('.achievement input[type="checkbox"]').length;
-      const checked = document.querySelectorAll('.achievement input[type="checkbox"]:checked').length;
-      counterEl.innerText = `Completed: ${checked} / ${total}`;
     }
   </script>
 </body>
