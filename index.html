@@ -31,8 +31,7 @@
 <script>
   firebase.auth().onAuthStateChanged(user => {
     if (!user) {
-      document.getElementById("proxyAchievements").innerText =
-        "User not authenticated.";
+      document.getElementById("proxyAchievements").innerText = "User not authenticated.";
       return;
     }
 
@@ -51,14 +50,35 @@
           return;
         }
 
-        container.innerHTML = data.map(ach => `
-          <div class="achievement">
+        container.innerHTML = ""; // Clear loading text
+
+        data.forEach((ach, index) => {
+          const isAchieved = ach.progressState === "Achieved";
+          const wrapper = document.createElement("div");
+          wrapper.className = "achievement";
+          wrapper.dataset.status = ach.progressState;
+
+          const unlocked = ach.progressState === "Achieved"
+            ? new Date(ach.progression?.timeUnlocked).toLocaleString()
+            : "";
+
+          wrapper.innerHTML = `
             <strong>${ach.name}</strong><br>
-            <em>Status:</em> ${ach.progressState || "Unknown"}<br>
-            <em>Unlocked:</em> ${ach.progression?.timeUnlocked ? new Date(ach.progression.timeUnlocked).toLocaleString() : "Not yet"}<br>
-            <br>
-          </div>
-        `).join("");
+            <em>Status:</em> ${ach.progressState === "NotStarted" ? "Locked" : ach.progressState}<br>
+            <em>Unlocked:</em> ${unlocked}<br><br>
+          `;
+
+          container.appendChild(wrapper);
+        });
+
+        // Handle hide completed toggle
+        const toggle = document.getElementById("hideCheckedToggle");
+        toggle.addEventListener("change", () => {
+          const hideCompleted = toggle.checked;
+          document.querySelectorAll("#proxyAchievements .achievement").forEach(el => {
+            el.style.display = (hideCompleted && el.dataset.status === "Achieved") ? "none" : "";
+          });
+        });
       })
       .catch(err => {
         document.getElementById("proxyAchievements").innerText =
@@ -67,6 +87,7 @@
     });
   });
 </script>
+
 
 
 
