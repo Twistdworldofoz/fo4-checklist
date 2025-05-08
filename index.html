@@ -53,14 +53,14 @@ container.innerHTML = data.map(ach => {
   const name = ach?.name || "Unnamed";
   const progress = ach?.progressState || "Unknown";
   const unlocked = ach?.timeUnlocked || "N/A";
-  const iconUrl = ach?.mediaAssets?.find(asset => asset.type === "Icon")?.url || "";
+ 
 
   return `
     <div style="margin-bottom: 1em; border-bottom: 1px solid #444; padding-bottom: 0.5em;">
       <strong>${name}</strong><br>
       Progress: ${progress}<br>
       Time Unlocked: ${unlocked}<br>
-      ${iconUrl ? `<img src="${iconUrl}" alt="icon" height="48">` : "No image"}
+      
     </div>
   `;
 }).join("");
