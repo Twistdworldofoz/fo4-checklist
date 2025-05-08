@@ -28,27 +28,32 @@
   <div id="proxyAchievements">Loading achievements from proxy...</div>
 
   <script src="auth.js"></script>
-  <script>
-auth.currentUser.getIdToken().then(token => {
-  fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
-    method: "GET",
-    headers: {
-      "Authorization": "Bearer " + token
-    }
-  })
-  .then(res => res.json())
-  .then(data => {
-    // Display data in the test box
-    const testBox = document.getElementById("proxy-results");
-    testBox.innerText = JSON.stringify(data, null, 2);
-  })
-  .catch(err => {
-    document.getElementById("proxy-results").innerText = "Error loading achievements: " + err.message;
-  });
-});
-      .catch(err => {
-        document.getElementById("proxyAchievements").innerText = "Error loading achievements: " + err.message;
+ <script>
+  // Wait for Firebase auth to be ready
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      user.getIdToken().then(token => {
+        fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token
+          }
+        })
+        .then(res => {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then(data => {
+          const testBox = document.getElementById("proxyAchievements");
+          testBox.innerText = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          document.getElementById("proxyAchievements").innerText = "Error loading achievements: " + err.message;
+        });
       });
-  </script>
+    }
+  });
+</script>
+
 </body>
 </html>
