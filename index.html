@@ -42,17 +42,26 @@
       return;
     }
 
-    container.innerHTML = data.map(ach => {
-  const name = ach?.rewards?.[0]?.name || ach?.name || "Unnamed";
-  const desc = ach?.description || ach?.titleAssociations?.[0]?.name || "No description";
-  const icon = ach?.mediaAssets?.find(asset => asset.type === "Icon")?.url || "";
+    const container = document.getElementById("proxyAchievements");
+
+if (!Array.isArray(data)) {
+  container.innerHTML = "<p>Invalid data structure.</p>";
+  return;
+}
+
+container.innerHTML = data.map(ach => {
+  const name = ach?.name || "Unnamed";
+  const progress = ach?.progressState || "Unknown";
+  const unlocked = ach?.timeUnlocked || "N/A";
+  const iconUrl = ach?.mediaAssets?.find(asset => asset.type === "Icon")?.url || "";
 
   return `
-    <div>
+    <div style="margin-bottom: 1em; border-bottom: 1px solid #444; padding-bottom: 0.5em;">
       <strong>${name}</strong><br>
-      <i>${desc}</i><br>
-      ${icon ? `<img src="${icon}" alt="icon" height="40">` : "No icon"}
-    </div><br>
+      Progress: ${progress}<br>
+      Time Unlocked: ${unlocked}<br>
+      ${iconUrl ? `<img src="${iconUrl}" alt="icon" height="48">` : "No image"}
+    </div>
   `;
 }).join("");
 
