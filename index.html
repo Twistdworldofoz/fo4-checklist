@@ -16,8 +16,6 @@
     label { display: flex; align-items: center; margin: 0.5rem 0; }
     input[type="checkbox"] { margin-right: 0.5rem; }
     .achievement { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dotted #444; }
-    .locked { opacity: 0.6; font-style: italic; }
-    .locked::before { content: "\1F512 "; margin-right: 4px; }
     .achievement-content { display: flex; align-items: center; gap: 1rem; }
     .achievement-icon { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; }
     .points { color: #ccc; font-weight: bold; font-size: 0.9rem; }
@@ -75,7 +73,6 @@
 
             const wrapper = document.createElement("div");
             wrapper.className = "achievement";
-            if (isLocked) wrapper.classList.add("locked");
             wrapper.dataset.status = ach.progressState;
 
             const unlockedText = isAchieved
@@ -92,12 +89,12 @@
                 </div>
               </div>
               <div class="points">+${score}G</div>
-            ;
+            `;
 
             container.appendChild(wrapper);
           });
 
-          counter.innerText = ${earned} / ${total} Achievements — ${gamerscoreEarned} / ${gamerscoreTotal} Gamerscore;
+          counter.innerText = `${earned} / ${total} Achievements — ${gamerscoreEarned} / ${gamerscoreTotal} Gamerscore`;
 
           document.getElementById("hideCheckedToggle").addEventListener("change", (e) => {
             const hide = e.target.checked;
