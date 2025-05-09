@@ -83,16 +83,16 @@
               : "";
 
             wrapper.innerHTML = `
-              <div class="achievement-content">
-                <img src="${ach.mediaAssets?.[0]?.url || ''}" alt="icon" class="achievement-icon">
-                <div>
-                  <strong>${ach.name}</strong><br>
-                  <em>Status:</em> ${isLocked ? "Locked" : ach.progressState}<br>
-                  <em>Unlocked:</em> ${unlockedText}
-                </div>
-              </div>
-              <div class="points">+${score}G</div>
-            `;
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <strong>${ach.name}</strong><br>
+      <em>Status:</em> ${isLocked ? "Locked" : ach.progressState}<br>
+      <em>Unlocked:</em> ${unlockedText}
+    </div>
+    <img src="${ach.mediaAssets?.[0]?.url || ''}" alt="icon" height="40" style="margin-left: 1rem;" />
+  </div>
+`;
+
 
             container.appendChild(wrapper);
           });
