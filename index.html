@@ -82,16 +82,12 @@
               ? new Date(ach.progression?.timeUnlocked).toLocaleString()
               : "";
 
-            wrapper.innerHTML = `
-  <div style="display: flex; align-items: center; justify-content: space-between;">
-    <div>
-      <strong>${ach.name}</strong><br>
-      <em>Status:</em> ${isLocked ? "Locked" : ach.progressState}<br>
-      <em>Unlocked:</em> ${unlockedText}
-    </div>
-    <img src="${ach.mediaAssets?.[0]?.url || ''}" alt="icon" height="40" style="margin-left: 1rem;" />
-  </div>
+        wrapper.innerHTML = `
+  <strong>${ach.name}</strong><br>
+  <em>Status:</em> ${isLocked ? "Locked" : ach.progressState}<br>
+  <em>Unlocked:</em> ${unlockedText}<br><br>
 `;
+
 
 
             container.appendChild(wrapper);
