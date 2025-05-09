@@ -1,39 +1,44 @@
-fetch("/getFirebaseConfig")
-  .then(res => res.json())
-  .then(config => {
-    firebase.initializeApp(config);
-    const auth = firebase.auth();
+const firebaseConfig = {
+  apiKey: "AIzaSyACQgTDxI55dGzoskY6qYb2mtepsL6IYH0",
+  authDomain: "fo4-checklist.firebaseapp.com",
+  projectId: "fo4-checklist",
+  storageBucket: "fo4-checklist.appspot.com",
+  messagingSenderId: "8298158004",
+  appId: "1:8298158004:web:f8fe5e16b4fc93f9397921"
+};
 
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        if (typeof onUserSignedIn === "function") onUserSignedIn(user);
-        showLogout(auth);
-      } else {
-        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-          .then(result => {
-            if (typeof onUserSignedIn === "function") onUserSignedIn(result.user);
-            showLogout(auth);
-          })
-          .catch(err => {
-            const statusEl = document.getElementById("status");
-            if (statusEl) statusEl.innerText = "Auth error: " + err.message;
-          });
-      }
-    });
-  })
-  .catch(err => {
-    console.error("Failed to load Firebase config:", err);
-  });
+// Always set persistent session
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 
-function showLogout(auth) {
+// Wait until Firebase tells us if user is signed in
+auth.onAuthStateChanged(user => {
+  if (user) {
+    if (typeof onUserSignedIn === "function") onUserSignedIn(user);
+    showLogout();
+  } else {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(result => {
+        if (typeof onUserSignedIn === "function") onUserSignedIn(result.user);
+        showLogout();
+      })
+      .catch(err => {
+        const statusEl = document.getElementById("status");
+        if (statusEl) statusEl.innerText = "Auth error: " + err.message;
+      });
+  }
+});
+
+// Show logout button once signed in
+function showLogout() {
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.style.display = "inline-block";
     logoutBtn.addEventListener("click", () => {
       auth.signOut().then(() => {
-        window.location.href = "index.html";
+        window.location.href = "index.html"; // reload or redirect
       });
     });
   }
