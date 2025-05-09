@@ -8,37 +8,32 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 1rem; background: #111; color: #eee; }
+    body { font-family: sans-serif; margin: 0; background: #111; color: #eee; }
+    nav { background: #222; padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+    nav h1 { margin: 0; font-size: 1.2rem; }
+    .container { padding: 1rem; }
     h2 { border-bottom: 1px solid #444; margin-top: 2rem; }
     label { display: flex; align-items: center; margin: 0.5rem 0; }
     input[type="checkbox"] { margin-right: 0.5rem; }
-    textarea { width: 100%; height: 60px; margin-top: 4px; background: #222; color: #eee; border: 1px solid #333; }
-    .achievement { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dotted #444; }
+    .achievement { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dotted #444; }
     .locked { opacity: 0.6; font-style: italic; }
-    .locked::before { content: "🔒 "; margin-right: 4px; }
-    #proxyAchievements { margin-top: 2rem; padding: 1rem; border: 1px solid #555; background: #222; }
-
-    .achievement-content {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .achievement-icon {
-      width: 48px;
-      height: 48px;
-      object-fit: cover;
-      border-radius: 4px;
-    }
+    .locked::before { content: "\1F512 "; margin-right: 4px; }
+    .achievement-content { display: flex; align-items: center; gap: 1rem; }
+    .achievement-icon { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; }
+    .points { color: #ccc; font-weight: bold; font-size: 0.9rem; }
+    #counter { margin-top: 1rem; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>Fallout 4 Achievement Checklist</h1>
-  <label><input type="checkbox" id="hideCheckedToggle"> Hide completed</label>
-  <div id="checklist"></div>
+  <nav>
+    <h1>Fallout 4 Achievement Checklist</h1>
+    <label><input type="checkbox" id="hideCheckedToggle"> Hide completed</label>
+  </nav>
 
-  <h2>Achievements</h2>
-  <div id="proxyAchievements">Loading achievements from proxy...</div>
+  <div class="container">
+    <div id="counter">Loading counter...</div>
+    <div id="proxyAchievements">Loading achievements from proxy...</div>
+  </div>
 
   <script src="auth.js"></script>
   <script>
@@ -50,23 +45,34 @@
 
       user.getIdToken().then(token => {
         fetch("https://us-central1-fo4-checklist.cloudfunctions.net/getAchievements", {
-          headers: {
-            "Authorization": "Bearer " + token
-          }
+          headers: { "Authorization": "Bearer " + token }
         })
         .then(res => res.json())
         .then(data => {
           const container = document.getElementById("proxyAchievements");
+          const counter = document.getElementById("counter");
           if (!Array.isArray(data)) {
             container.innerText = "Unexpected response format.";
             return;
           }
 
-          container.innerHTML = ""; // clear old content
+          container.innerHTML = "";
 
-          data.forEach((ach) => {
+          let total = data.length;
+          let earned = 0;
+          let gamerscoreTotal = 0;
+          let gamerscoreEarned = 0;
+
+          data.forEach(ach => {
             const isAchieved = ach.progressState === "Achieved";
             const isLocked = ach.progressState === "NotStarted";
+            const score = parseInt(ach.rewards?.[0]?.value || 0);
+            gamerscoreTotal += score;
+            if (isAchieved) {
+              earned++;
+              gamerscoreEarned += score;
+            }
+
             const wrapper = document.createElement("div");
             wrapper.className = "achievement";
             if (isLocked) wrapper.classList.add("locked");
@@ -82,25 +88,26 @@
                 <div>
                   <strong>${ach.name}</strong><br>
                   <em>Status:</em> ${isLocked ? "Locked" : ach.progressState}<br>
-                  <em>Unlocked:</em> ${unlockedText}<br>
+                  <em>Unlocked:</em> ${unlockedText}
                 </div>
               </div>
+              <div class="points">+${score}G</div>
             `;
 
             container.appendChild(wrapper);
           });
 
-          const toggle = document.getElementById("hideCheckedToggle");
-          toggle.addEventListener("change", () => {
-            const hideCompleted = toggle.checked;
-            document.querySelectorAll("#proxyAchievements .achievement").forEach(el => {
-              el.style.display = (hideCompleted && el.dataset.status === "Achieved") ? "none" : "";
+          counter.innerText = `${earned} / ${total} Achievements — ${gamerscoreEarned} / ${gamerscoreTotal} Gamerscore`;
+
+          document.getElementById("hideCheckedToggle").addEventListener("change", (e) => {
+            const hide = e.target.checked;
+            document.querySelectorAll(".achievement").forEach(el => {
+              el.style.display = (hide && el.dataset.status === "Achieved") ? "none" : "";
             });
           });
         })
         .catch(err => {
-          document.getElementById("proxyAchievements").innerText =
-            "Error loading achievements: " + err.message;
+          document.getElementById("proxyAchievements").innerText = "Error loading achievements: " + err.message;
         });
       });
     });
